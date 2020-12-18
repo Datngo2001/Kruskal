@@ -14,61 +14,51 @@ namespace Kruskal
         }
         public static void kruskal(Graph G)
         {
-            List<Edge> F = new List<Edge>();
-
-            // 1. xap sep theo trong so tang dan
-            for (int i = 0; i < G.Edges.Count; i++)
+            try
             {
-                for (int j = 0; j < G.Edges.Count - 1; j++)
-                {
-                    if(G.Edges[j].Weight > G.Edges[j + 1].Weight)
-                    {
-                        Edge a = G.Edges[j];
-                        G.Edges[j] = G.Edges[j + 1];
-                        G.Edges[j + 1] = a;
-                    }
-                }
-            }
+                List<Edge> F = new List<Edge>();
 
-            // 2. them cac canh vao F neu khong tao nen chu trinh
-            // 3. lap lai den khi co n - 1 canh dc chon
-            //F.Add(G.Edges[0]);
-            while(F.Count < G.Vertices.Count - 1)
-            {
-                //xet tung canh, cac canh co duy nhat 1 nut trung voi cac nut cua cac canh da co trong F, 
-                //thi nhung canh do dc them vao F
+                // 1. xap sep theo trong so tang dan
                 for (int i = 0; i < G.Edges.Count; i++)
                 {
-                    bool add = true;
-                    for (int j = 0; j < F.Count; j++)
+                    for (int j = 0; j < G.Edges.Count - 1; j++)
                     {
-                        if(G.Edges[i].End1.Name == F[j].End1.Name || G.Edges[i].End1.Name == F[j].End2.Name)
+                        if (G.Edges[j].Weight > G.Edges[j + 1].Weight)
                         {
-                            for (int k = 0; k < F.Count; k++)
-                            {
-                                if (G.Edges[i].End2.Name == F[k].End2.Name || G.Edges[i].End2.Name == F[k].End1.Name)
-                                {
-                                    add = false;
-                                    break;
-                                }
-                                else
-                                {
-                                    add = true;
-                                }
-                            }
-                            break;
+                            Edge a = G.Edges[j];
+                            G.Edges[j] = G.Edges[j + 1];
+                            G.Edges[j + 1] = a;
                         }
                     }
-                    if (add == true)
+                }
+                // 2. them cac canh vao F neu khong tao nen chu trinh
+                // 3. lap lai den khi co n - 1 canh dc chon
+                for (int i = 0; (i < G.Edges.Count) && (F.Count < G.Vertices.Count - 1); i++)
+                {
+                    int End1TreeNumber = Convert.ToInt32(G.Edges[i].End1.Name);
+                    int End2TreeNumber = Convert.ToInt32(G.Edges[i].End2.Name);
+                    if (G.Trees[End1TreeNumber] != G.Trees[End2TreeNumber])
                     {
                         F.Add(G.Edges[i]);
+                        if (G.biggerTree(G.Trees[End1TreeNumber], G.Trees[End2TreeNumber]))
+                        {
+                            G.Trees[End2TreeNumber] = G.Trees[End1TreeNumber];
+                        }
+                        else
+                        {
+                            G.Trees[End1TreeNumber] = G.Trees[End2TreeNumber];
+                        }
                     }
                 }
+                // Show ket qua
+                for (int i = 0; i < F.Count; i++)
+                {
+                    Console.WriteLine("(" + F[i].End1.Name + "," + F[i].End2.Name + ")" + " weight: " + F[i].Weight);
+                }
             }
-            // Show ket qua
-            for (int i = 0; i < F.Count; i++)
+            catch (Exception e)
             {
-                Console.WriteLine("(" + F[i].End1.Name + "," + F[i].End2.Name + ")" + " weight: " + F[i].Weight);
+                Console.WriteLine(e.Message);
             }
 
         }
